@@ -4,6 +4,7 @@ import CartButtons from './CartButtons'
 import Footer from './Footer'
 import Sidebar from './Sidebar'
 import Hero from './Hero'
+import Logo from './Logo'
 import Services from './Services'
 import Contact from './Contact'
 import Loading from './Loading'
@@ -37,5 +38,6 @@ export {
   Stars,
   CartContent,
   PageHero,
-  StripeCheckout
+  StripeCheckout,
+  Logo
 }

@@ -40,6 +40,6 @@ export const services = [
   }
 ]
 
-export const productsUrl = 'https://course-api.com/react-store-products'
+export const productsUrl = `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/products`
 
-export const singleProductUrl = 'https://course-api.com/react-store-single-product?id='
+export const singleProductUrl = `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/products/`

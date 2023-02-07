@@ -22,7 +22,9 @@ const SingleProductPage = () => {
   }, [singleProductsError])
 
   if (singleProductsLoading) {
-    return <Loading />
+    return <div className="page-100">
+      <Loading />
+    </div>
   }
 
   if (singleProductsError) {

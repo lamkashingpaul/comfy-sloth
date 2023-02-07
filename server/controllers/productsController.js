@@ -1,20 +1,70 @@
 const { StatusCodes } = require('http-status-codes')
 const { NotFoundError } = require('../errors')
 
-const Product = require('../models/Product')
+const Airtable = require('airtable')
+const table = new Airtable({
+  apiKey: process.env.AIRTABLE_TOKEN
+}).base(process.env.AIRTABLE_BASE_ID).table(process.env.AIRTABLE_TABLE)
 
 const getAllProducts = async (req, res) => {
-  const products = await Product.find({})
+  const products = []
+
+  await table
+    .select({
+      fields: ['id', 'name', 'price', 'images', 'featured', 'colors', 'company', 'description', 'category', 'shipping'],
+      view: 'Grid view'
+    })
+    .all()
+    .then((records) => {
+      records.forEach((record) => {
+        const { fields } = record._rawJson
+        const image = (fields.images && fields.images[0]?.url) || ''
+        delete fields.images
+        products.push({ ...fields, image })
+      })
+    })
+    .catch((err) => {
+      if (err) {
+        const error = new Error(err.message)
+        error.name = err.error
+        error.statusCode = err.statusCode
+        throw error
+      }
+    })
+
   return res.status(StatusCodes.OK).json(products)
 }
 
 const getSingleProduct = async (req, res) => {
   const { id: productId } = req.params
-  const product = await Product.findOne({ id: productId })
-  if (!product) {
+
+  const products = []
+  await table
+    .select({
+      maxRecords: 1,
+      filterByFormula: `{id} = "${productId}"`,
+      view: 'Grid view'
+    })
+    .all()
+    .then((records) => {
+      records.forEach((record) => {
+        products.push({ ...record._rawJson.fields })
+      })
+    })
+    .catch((err) => {
+      if (err) {
+        const error = new Error(err.message)
+        error.name = err.error
+        error.statusCode = err.statusCode
+        throw error
+      }
+    })
+
+  if (products.length === 0) {
     throw new NotFoundError(`No product with id: ${productId}`)
   }
-  return res.status(StatusCodes.OK).json(product)
+
+  return res.status(StatusCodes.OK).json(products[0])
 }
 
 module.exports = {

@@ -8,8 +8,9 @@ const ProductsPage = () => {
 
   if (productsLoading) {
     return <main>
-      <PageHero title="products" />
-      <Loading />
+      <div className="page-100">
+        <Loading />
+      </div>
     </main>
   }
 

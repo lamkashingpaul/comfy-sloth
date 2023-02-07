@@ -6,7 +6,9 @@ import axios from 'axios'
 import { useCartContext } from '../context/cartContext'
 import { useAuth0 } from '@auth0/auth0-react'
 import { formatPrice } from '../utils/helpers'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import Loading from './Loading'
+import Error from './Error'
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
 
@@ -21,6 +23,9 @@ const CheckoutForm = () => {
   const [error, setError] = useState(null)
   const [processing, setProcessing] = useState('')
   const [disabled, setDisabled] = useState(true)
+
+  const [isLoadingClientSecret, setIsLoadingClientSecret] = useState(true)
+  const [clientSecretError, setClientSecretError] = useState(false)
   const [clientSecret, setClientSecret] = useState('')
 
   const cardStyle = {
@@ -42,9 +47,12 @@ const CheckoutForm = () => {
   }
 
   const createPaymentIntent = async () => {
+    setIsLoadingClientSecret(true)
+    setClientSecretError(false)
+    setClientSecret('')
     try {
       const accessToken = await getAccessTokenSilently({
-        audience: process.env.REACT_APP_PROTECTED_API_ENDPOINT
+        audience: `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/`
       })
 
       const { data } = await axios.post(
@@ -56,6 +64,9 @@ const CheckoutForm = () => {
       setClientSecret(data.clientSecret)
     } catch (error) {
       console.log(error)
+      setClientSecretError(true)
+    } finally {
+      setIsLoadingClientSecret(false)
     }
   }
 
@@ -88,6 +99,21 @@ const CheckoutForm = () => {
       }, 10000)
     }
     setProcessing(false)
+  }
+
+  if (isLoadingClientSecret) {
+    return <Loading />
+  }
+
+  if (clientSecretError) {
+    return <>
+      <Error>
+        <Link
+          className="btn"
+          onClick={createPaymentIntent}
+        >try again</Link>
+      </Error>
+    </>
   }
 
   return <div>

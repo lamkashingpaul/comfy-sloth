@@ -1,9 +1,11 @@
 const { StatusCodes } = require('http-status-codes')
 const { BadRequestError } = require('../errors')
+const Airtable = require('airtable')
+const table = new Airtable({
+  apiKey: process.env.AIRTABLE_TOKEN
+}).base(process.env.AIRTABLE_BASE_ID).table(process.env.AIRTABLE_TABLE)
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
-
-const Product = require('../models/Product')
 
 const calculateOrderAmount = async (req, res, next) => {
   const { cart, totalAmount, shippingFee } = req.body
@@ -20,16 +22,37 @@ const calculateOrderAmount = async (req, res, next) => {
     const productId = itemId.substring(0, itemId.lastIndexOf('#'))
     const productColor = itemId.substring(itemId.lastIndexOf('#'), itemId.length)
 
-    const product = await Product.findOne({ id: productId, colors: productColor })
-    if (!product) {
+    const products = []
+    await table
+      .select({
+        maxRecords: 1,
+        filterByFormula: `AND({id} = "${productId}", FIND("${productColor}", colors) > 0)`,
+        view: 'Grid view'
+      })
+      .all()
+      .then((records) => {
+        records.forEach((record) => {
+          products.push({ ...record._rawJson.fields })
+        })
+      })
+      .catch((err) => {
+        if (err) {
+          const error = new Error(err.message)
+          error.name = err.error
+          error.statusCode = err.statusCode
+          throw error
+        }
+      })
+
+    if (products.length === 0) {
       throw new BadRequestError(`No product with id: ${productId} and color: ${productColor}`)
     }
 
-    if (price !== product.price) {
+    if (price !== products[0].price) {
       throw new BadRequestError(`Invalid price for product with id: ${productId} and color: ${productColor}`)
     }
 
-    if (amount > product.stock) {
+    if (amount > products[0].stock) {
       throw new BadRequestError(`Invalid amount for product with id: ${productId} and color: ${productColor}`)
     }
 

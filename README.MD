@@ -1,3 +1,3 @@
 # Project Demo Page
 
-https://lamkashingpaul.com/comfy-sloth/
+https://lamkashingpaul.com/gadgets-junkie/

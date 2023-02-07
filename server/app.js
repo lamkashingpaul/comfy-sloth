@@ -11,7 +11,6 @@ const app = express()
 
 const rateLimiter = require('express-rate-limit')
 const helmet = require('helmet')
-const cors = require('cors')
 const xss = require('xss-clean')
 
 const stripeRouter = require('./routes/stripeRoute')
@@ -27,24 +26,26 @@ app.use(rateLimiter({
   max: 1000
 }))
 
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    'connect-src': [
-      "'self'",
-      `https://${process.env.AUTH0_DOMAIN}`,
-      'https://course-api.com/react-store-products',
-      'https://course-api.com/react-store-single-product'
-    ],
-    'frame-src': [
-      "'self'",
-      `https://${process.env.AUTH0_DOMAIN}`,
-      'https://js.stripe.com'],
-    'img-src': ["'self'", 'https://v5.airtableusercontent.com'],
-    'script-src': ["'self'", 'https://js.stripe.com']
-  }
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'connect-src': [
+        "'self'",
+        `https://${process.env.AUTH0_DOMAIN}`
+      ],
+      'frame-src': [
+        "'self'",
+        `https://${process.env.AUTH0_DOMAIN}`,
+        'https://js.stripe.com'
+      ],
+      'img-src': ["'self'", 'https://*.airtableusercontent.com'],
+      'script-src': ["'self'", 'https://js.stripe.com']
+    }
+  },
+  crossOriginEmbedderPolicy: false
 }))
 
-app.use(cors())
 app.use(xss())
 
 app.use(express.static(path.resolve(__dirname, '../client/build/')))

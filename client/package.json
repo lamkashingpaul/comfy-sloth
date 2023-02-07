@@ -1,5 +1,5 @@
 {
-  "name": "comfy",
+  "name": "gadgets-junkie-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -53,5 +53,5 @@
     "eslint-plugin-react": "^7.31.11",
     "prettier": "^2.8.1"
   },
-  "homepage": "/comfy-sloth"
+  "homepage": "/gadgets-junkie"
 }
