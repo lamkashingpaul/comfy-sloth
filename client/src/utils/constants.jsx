@@ -40,6 +40,6 @@ export const services = [
   }
 ]
 
-export const productsUrl = `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/products`
+export const productsUrl = `${import.meta.env.VITE_PROTECTED_API_ENDPOINT}/products`
 
-export const singleProductUrl = `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/products/`
+export const singleProductUrl = `${import.meta.env.VITE_PROTECTED_API_ENDPOINT}/products/`

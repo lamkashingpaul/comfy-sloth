@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Loading from './Loading'
 import Error from './Error'
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
 const CheckoutForm = () => {
   const { cart, totalAmount, shippingFee, clearCart } = useCartContext()
@@ -52,11 +52,13 @@ const CheckoutForm = () => {
     setClientSecret('')
     try {
       const accessToken = await getAccessTokenSilently({
-        audience: `${process.env.REACT_APP_PROTECTED_API_ENDPOINT}/`
+        authorizationParams: {
+          audience: `${import.meta.env.VITE_PROTECTED_API_ENDPOINT}/`
+        }
       })
 
       const { data } = await axios.post(
-        process.env.REACT_APP_STRIPE_API_ENDPOINT,
+        import.meta.env.VITE_STRIPE_API_ENDPOINT,
         { cart, totalAmount, shippingFee },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       )

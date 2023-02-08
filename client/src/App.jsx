@@ -6,7 +6,7 @@ import { Home, Products, SingleProduct, About, AuthWrapper, Cart, Error, Checkou
 
 const App = () => {
   return <AuthWrapper>
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Navbar />
       <Sidebar />
 
