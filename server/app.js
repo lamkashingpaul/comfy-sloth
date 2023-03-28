@@ -54,6 +54,10 @@ app.use(express.json())
 app.use('/api/v1/products', productsRouter)
 app.use('/api/v1/stripe', stripeRouter)
 
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/dist/index.html'))
+})
+
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useProductsContext } from '../context/productsContext'
 import { singleProductUrl as url } from '../utils/constants'
@@ -9,7 +9,11 @@ import styled from 'styled-components'
 const SingleProductPage = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const { singleProductsLoading, singleProductsError, singleProduct, fetchSingleProduct } = useProductsContext()
+  const { setSingleProductLoading, singleProductsLoading, singleProductsError, singleProduct, fetchSingleProduct } = useProductsContext()
+
+  useMemo(() => {
+    setSingleProductLoading()
+  }, [id])
 
   useEffect(() => {
     fetchSingleProduct(`${url}${id}`)
@@ -28,7 +32,9 @@ const SingleProductPage = () => {
   }
 
   if (singleProductsError) {
-    return <Error />
+    return <div className="page-100">
+      <Error />
+    </div>
   }
 
   const { name, price, description, stock, stars, reviews, id: sku, company, images } = singleProduct
@@ -51,7 +57,7 @@ const SingleProductPage = () => {
             <span>Available: </span>
             {stock === 0 ? 'out of stock' : 'in stock'}
           </p>
-          <p className="info">
+          <p className="info sku">
             <span>SKU: </span>
             {sku}
           </p>
@@ -88,6 +94,10 @@ const Wrapper = styled.main`
     span {
       font-weight: 700;
     }
+  }
+
+  .sku {
+    text-transform: none;
   }
 
   @media (min-width: 992px) {

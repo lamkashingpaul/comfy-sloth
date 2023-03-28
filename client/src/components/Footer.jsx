@@ -3,7 +3,7 @@ import styled from 'styled-components'
 const Footer = () => {
   return <Wrapper>
     <h5>&copy; {new Date().getFullYear()}</h5>
-    <span> ComfySloth </span>
+    <span> Gadgets Junkie </span>
     <h5>All rights reserved</h5>
   </Wrapper>
 }
@@ -11,6 +11,7 @@ const Footer = () => {
 const Wrapper = styled.footer`
   height: 5rem;
   display: flex;
+  gap: 0.1rem 0.5rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;

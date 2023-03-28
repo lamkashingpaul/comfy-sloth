@@ -53,6 +53,10 @@ export const ProductsProvider = ({ children }) => {
     }
   }
 
+  const setSingleProductLoading = () => {
+    dispatch({ type: GET_SINGLE_PRODUCT_BEGIN })
+  }
+
   const fetchSingleProduct = async (url) => {
     dispatch({ type: GET_SINGLE_PRODUCT_BEGIN })
 
@@ -73,6 +77,7 @@ export const ProductsProvider = ({ children }) => {
     ...state,
     openSidebar,
     closeSidebar,
+    setSingleProductLoading,
     fetchSingleProduct
   }}
   >
